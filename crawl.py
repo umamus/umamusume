@@ -151,7 +151,8 @@ for d in res:
         amounts.pop()
 
     sum_ = sum(amounts)
-    if sum_ < 1000:
+    # 
+    if sum_ < 3000:
         print("{} [실패] {}".format(d, orig_sub))
         continue
 
