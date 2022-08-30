@@ -20,17 +20,6 @@
       rel="stylesheet"
       href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css"
     />
-    <style>
-      table {
-        width: 100%;
-      }
-
-      .footer a {
-        font-size: 12px;
-        color: #999;
-        text-decoration: none;
-      }
-    </style>
     <script
       src="https://code.jquery.com/jquery-3.6.1.min.js"
       integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
@@ -45,7 +34,7 @@
         <h1>총 환불 예정 금액: <span id="total"></span></h1>
       </div>
       <div class="row p-2">
-        <table id="table">
+        <table id="table" class="w-100">
           <thead>
             <tr>
               <th>게시글 번호</th>
@@ -57,21 +46,30 @@
       </div>
       <div class="row p-1">
         <h6>
-          <span id="date" style="font-weight: bold">10분 전</span>에
+          <span id="date" style="font-weight: bold">분 전</span>에
           <a href="https://gall.dcinside.com/umamusu" target="_blank"
             >우마무스메 프리티 더비 갤러리</a
           >로부터 업데이트 되었습니다.
         </h6>
-        <div class="footer">
-          <a href="https://gall.dcinside.com/umamusu/688110" target="_blank"
+        <div class="footer" style="font-size: 12px">
+          <a
+            href="https://gall.dcinside.com/umamusu/688110"
+            target="_blank"
+            class="text-decoration-none text-muted"
             >게시글</a
           >
           ·
-          <a href="https://github.com/umamus/umamusume" target="_blank"
+          <a
+            href="https://github.com/umamus/umamusume"
+            target="_blank"
+            class="text-decoration-none text-muted"
             >GitHub</a
           >
           ·
-          <a href="https://www.flaticon.com/free-icons/horse" target="_blank"
+          <a
+            href="https://www.flaticon.com/free-icons/horse"
+            target="_blank"
+            class="text-decoration-none text-muted"
             >Icon by Flaticon</a
           >
         </div>
