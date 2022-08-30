@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>우마무스메 프리티 더비 환불 예정 금액 집계</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.6.1.min.js"
+      integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row p-2">
+        <h1>총 환불 예정 금액: <span id="total"></span></h1>
+        <h3>최종 업데이트 일시: <span id="date"></span></h3>
+      </div>
+      <div class="row py-2">
+        <table id="table" style="width: 100%">
+          <thead>
+            <tr>
+              <th>게시글 번호</th>
+              <th>닉네임</th>
+              <th>금액</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+    <script>
+      fetch("processed.json").then((res) => {
+        res.json().then((data) => {
+          const formatter = new Intl.NumberFormat("ko-KR", {
+            style: "currency",
+            currency: "KRW",
+          });
+          document.getElementById("total").textContent = formatter.format(
+            data.total_sum
+          );
+          document.getElementById("date").textContent = new Date(
+            data.updated * 1000
+          ).toLocaleString();
+
+          $("#table").DataTable({
+            data: data.data,
+            columns: [
+              {
+                data: "id",
+                render: (t) =>
+                  `<a href="https://gall.dcinside.com/umamusu/${t}">${t}</a>`,
+              },
+              { data: "name" },
+              { data: "amount", render: (t) => formatter.format(t) },
+            ],
+            order: [[0, "desc"]],
+            language: {
+              decimal: "",
+              emptyTable: "데이터가 없습니다.",
+              info: "_START_ - _END_ (총 _TOTAL_건)",
+              infoEmpty: "0명",
+              infoFiltered: "(전체 _MAX_명 중 검색결과)",
+              infoPostFix: "",
+              thousands: ",",
+              lengthMenu: "_MENU_개씩 보기",
+              loadingRecords: "로딩중...",
+              processing: "처리중...",
+              search: "검색 : ",
+              zeroRecords: "검색된 데이터가 없습니다.",
+              paginate: {
+                first: "첫 페이지",
+                last: "마지막 페이지",
+                next: "다음",
+                previous: "이전",
+              },
+              aria: {
+                sortAscending: " : 오름차순 정렬",
+                sortDescending: " : 내림차순 정렬",
+              },
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
