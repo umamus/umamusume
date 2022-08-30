@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,9 +11,8 @@
       crossorigin="anonymous"
     />
     <link
+      href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css"
       rel="stylesheet"
-      type="text/css"
-      href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css"
     />
     <script
       src="https://code.jquery.com/jquery-3.6.1.min.js"
@@ -21,14 +20,14 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
   </head>
   <body>
     <div class="container">
-      <div class="row p-2">
+      <div class="row p-3">
         <h1>총 환불 예정 금액: <span id="total"></span></h1>
-        <h3>최종 업데이트 일시: <span id="date"></span></h3>
       </div>
-      <div class="row py-2">
+      <div class="row p-2">
         <table id="table" style="width: 100%">
           <thead>
             <tr>
@@ -39,8 +38,32 @@
           </thead>
         </table>
       </div>
+      <div class="row p-1">
+        <h6>
+          <span id="date" style="font-weight: bold">10분 전</span>에
+          <a href="https://gall.dcinside.com/umamusu" target="_blank"
+            >우마무스메 프리티 더비 갤러리</a
+          >로부터 업데이트 되었습니다.
+        </h6>
+      </div>
     </div>
     <script>
+      const units = {
+        year: 24 * 60 * 60 * 1000 * 365,
+        month: (24 * 60 * 60 * 1000 * 365) / 12,
+        day: 24 * 60 * 60 * 1000,
+        hour: 60 * 60 * 1000,
+        minute: 60 * 1000,
+        second: 1000,
+      };
+      const getRelativeTime = (d1, d2 = new Date()) => {
+        const rtf = new Intl.RelativeTimeFormat("ko-KR", { numeric: "auto" });
+        const elapsed = d1 - d2;
+        for (const u in units)
+          if (Math.abs(elapsed) > units[u] || u == "second")
+            return rtf.format(Math.round(elapsed / units[u]), u);
+      };
+
       fetch("processed.json").then((res) => {
         res.json().then((data) => {
           const formatter = new Intl.NumberFormat("ko-KR", {
@@ -50,9 +73,9 @@
           document.getElementById("total").textContent = formatter.format(
             data.total_sum
           );
-          document.getElementById("date").textContent = new Date(
-            data.updated * 1000
-          ).toLocaleString();
+          document.getElementById("date").textContent = getRelativeTime(
+            new Date(data.updated * 1000)
+          );
 
           $("#table").DataTable({
             data: data.data,
@@ -60,11 +83,12 @@
               {
                 data: "id",
                 render: (t) =>
-                  `<a href="https://gall.dcinside.com/umamusu/${t}">${t}</a>`,
+                  `<a href="https://gall.dcinside.com/umamusu/${t}" target="_blank">${t}</a>`,
               },
               { data: "name" },
               { data: "amount", render: (t) => formatter.format(t) },
             ],
+            pageLength: 25,
             order: [[0, "desc"]],
             language: {
               decimal: "",
