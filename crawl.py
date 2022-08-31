@@ -146,7 +146,8 @@ for d in res:
 
     # 구글 259,000  25.9만
     # 구글 383,640 애플 48,200 총액 431,840원
-    if (len(amounts) == 2 and amounts[0] == amounts[1]) or (len(amounts) == 3 and amounts[0] + amounts[1] == amounts[2]):
+    if (len(amounts) == 2 and amounts[0] == amounts[1]) or (len(amounts) == 3 and amounts[0] + amounts[1] == amounts[2])\
+        or (len(amounts) == 3 and amounts[0] == amounts[1] + amounts[2]):
         print("{} [중복] {}".format(d, orig_sub))
         amounts.pop()
 
