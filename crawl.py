@@ -146,10 +146,14 @@ for d in res:
 
     # 구글 259,000  25.9만
     # 구글 383,640 애플 48,200 총액 431,840원
-    if (len(amounts) == 2 and amounts[0] == amounts[1]) or (len(amounts) == 3 and amounts[0] + amounts[1] == amounts[2])\
-        or (len(amounts) == 3 and amounts[0] == amounts[1] + amounts[2]):
+    if (len(amounts) == 2 and amounts[0] == amounts[1]) or (len(amounts) == 3 and amounts[0] + amounts[1] == amounts[2]):
         print("{} [중복] {}".format(d, orig_sub))
         amounts.pop()
+
+    # 총액 xx 구글 yy 애플 zz
+    if len(amounts) == 3 and amounts[1] + amounts[2] == amounts[0]:
+        print("{} [중복] {}".format(d, orig_sub))
+        amounts.pop(0)
 
     sum_ = sum(amounts)
     # 구글 애플 163.8
