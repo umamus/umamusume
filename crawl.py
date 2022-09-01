@@ -150,6 +150,11 @@ for d in res:
         print("{} [중복] {}".format(d, orig_sub))
         amounts.pop()
 
+    # 총액 xx 구글 yy 애플 zz
+    if len(amounts) == 3 and amounts[1] + amounts[2] == amounts[0]:
+        print("{} [중복] {}".format(d, orig_sub))
+        amounts.pop(0)
+
     sum_ = sum(amounts)
     # 구글 애플 163.8
     if sum_ < 3000:
