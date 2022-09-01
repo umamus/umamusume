@@ -37,7 +37,6 @@ page = 0
 last_page = 1000
 
 while page < last_page:
-    print("Crawling page {}".format(page))
     resp = session.post("https://m.dcinside.com/ajax/response-list", data={
         "id": "umamusu",
         "page": str(page + 1),
