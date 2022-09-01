@@ -64,7 +64,7 @@ while page < last_page:
     else:
         print(result)
     page += 1
-    time.sleep(0.05)
+    time.sleep(0.02)
 
 processed = []
 total_sum = 0
@@ -80,6 +80,9 @@ for d in res:
 
     subject = res[d]['subject']
     orig_sub = subject
+
+    # 100'000
+    subject = re.sub(r"['\"]", "", subject)
 
     # 구글/ 1,540,000~1,575,500 추정
     # 구글 91.96$
