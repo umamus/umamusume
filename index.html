@@ -9,7 +9,11 @@
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
     <meta name="theme-color" content="#e87f8d" />
-    <title>우마무스메 프리티 더비 리콜 예정 금액 집계</title>
+    <meta
+      name="description"
+      content="우마무스메 프리티 더비 유저들이 리콜 청구할 예정 금액을 집계합니다."
+    />
+    <title>우마무스메 프리티 더비 리콜 예정 금액</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
@@ -36,7 +40,7 @@
             <h5 class="card-title text-muted">총 리콜 예정 금액</h5>
             <h1 class="fw-bolder"><span id="total"></span></h1>
             <a
-              href="https://gall.dcinside.com/umamusu/632505"
+              href="https://gall.dcinside.com/umamusu/732661"
               target="_blank"
               class="card-link link-secondary"
               >성명문</a
@@ -113,7 +117,7 @@
             data.total_sum
           );
           document.getElementById("date").textContent = getRelativeTime(
-            new Date(data.updated * 1000)
+            data.updated * 1000
           );
 
           $("#table").DataTable({
@@ -121,11 +125,16 @@
             columns: [
               {
                 data: "id",
-                render: (t) =>
-                  `<a href="https://gall.dcinside.com/umamusu/${t}" target="_blank">${t}</a>`,
+                render: (d, t) =>
+                  t === "display"
+                    ? `<a href="https://gall.dcinside.com/umamusu/${d}" target="_blank">${d}</a>`
+                    : d,
               },
               { data: "name" },
-              { data: "amount", render: (t) => formatter.format(t) },
+              {
+                data: "amount",
+                render: (d, t) => (t === "display" ? formatter.format(d) : d),
+              },
             ],
             pageLength: 25,
             order: [[0, "desc"]],
@@ -133,7 +142,7 @@
               decimal: "",
               emptyTable: "데이터가 없습니다.",
               info: "_START_ - _END_ (총 _TOTAL_건)",
-              infoEmpty: "0명",
+              infoEmpty: "0건",
               infoFiltered: "(전체 _MAX_건 중 검색결과)",
               infoPostFix: "",
               thousands: ",",
