@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+    <meta name="theme-color" content="#e87f8d" />
+    <meta
+      name="description"
+      content="우마무스메 프리티 더비 결제 내역 추출을 도와줍니다."
+    />
+    <title>우마무스메 프리티 더비 결제 내역 추출기</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"
+      integrity="sha256-rMfkFFWoB2W1/Zx+4bgHim0WC7vKRVrq6FTeZclH1Z4="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"
+      integrity="sha256-Ue6wom48SQbpmwW9QIk7pyVDR5Bg36SetP67V2pDkxc="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body class="py-4">
+    <div class="container-lg">
+      <h1>우마무스메 프리티 더비 결제 내역 추출기</h1>
+      <p class="lead">
+        본 페이지에서 제출된 파일은 서버로 전송되지 않고, 웹 브라우저에서 처리가
+        이루어집니다. 만약 불안하시다면, 인터넷 연결을 끊어도 사용이 가능합니다.
+      </p>
+      <h2 class="mt-4">구글</h2>
+      <h4>
+        1.
+        <a href="https://takeout.google.com" target="_blank"
+          >https://takeout.google.com</a
+        >에 접속합니다.
+      </h4>
+      <h4>
+        2. "모두 선택 해제"를 클릭한 후 제품 중 "Google Pay"를 선택합니다.
+      </h4>
+      <h4>
+        3. "모든 활동 및 저장된 항목 포함됨"을 클릭하여 "Google에서의 거래
+        내역"만 남겨두고 선택 해제합니다.
+      </h4>
+      <h4>4. 하단 "다음 단계"를 클릭합니다.</h4>
+      <h4>5. 하단 "내보내기 생성"를 클릭합니다.</h4>
+      <h4>6. "내보내기 관리"가 표시될 때까지 기다립니다.</h4>
+      <h4>7. "다운로드"를 클릭하면 .zip 파일이 다운로드됩니다.</h4>
+      <h4>
+        <label for="google">8. 다운로드된 .zip 파일을 선택해주세요</label>
+      </h4>
+      <div class="mb-3">
+        <input class="form-control" type="file" id="google" accept=".zip" />
+      </div>
+      <h5>총액: <span id="googleSum"></span></h5>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">일시</th>
+            <th scope="col">거래번호</th>
+            <th scope="col">설명</th>
+            <th scope="col">결제수단</th>
+            <th scope="col">금액</th>
+          </tr>
+        </thead>
+        <tbody id="googleTable"></tbody>
+      </table>
+      <h4>
+        9. 결제 내역을
+        <button type="button" class="btn btn-primary" id="googleDl">
+          다운로드</button
+        >합니다.
+      </h4>
+      <h2 class="mt-4">애플</h2>
+      <p class="lead">PC에서만 가능</p>
+      <h4>
+        1.
+        <a href="https://reportaproblem.apple.com" target="_blank"
+          >https://reportaproblem.apple.com</a
+        >에 접속합니다.
+      </h4>
+      <h4>2. F12를 눌러 개발자 도구를 열고, 콘솔(Console) 탭을 엽니다.</h4>
+      <h4>3. 아래 스크립트를 붙여 넣은 후 엔터를 누릅니다.</h4>
+      <pre><code>let csv = "\ufeffOrder ID,Date,Publisher,Title,Price\n";
+document.querySelectorAll("div.purchase").forEach(p => {
+  const publisher = p.querySelector("div.pli-publisher");
+  const title = p.querySelector("label.pli-title");
+  const price = p.querySelector("div.pli-price");
+  const date = p.querySelector("span.invoice-date");
+  const number = p.querySelector("span.web-order-number");
+  if (publisher.textContent === "우마무스메 프리티 더비")
+    csv += `${number.textContent},${date.textContent},${publisher.textContent},"${title.textContent}","${price.textContent}"\n`;
+});
+const link = document.createElement("a");
+link.download = "애플 결제내역.csv";
+link.href = `data:text/csv;charset=utf-8,${encodeURI(csv)}`;
+document.body.appendChild(link);
+link.click();</code></pre>
+      <h4>4. CSV 파일이 다운로드됩니다.</h4>
+    </div>
+    <script>
+      const google = document.getElementById("google");
+      const googleDl = document.getElementById("googleDl");
+      let googleTx = [];
+      google.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+          const zip = await JSZip.loadAsync(file);
+          const csv = await Promise.all(
+            zip
+              .file(/^Takeout\/Google Pay\/Google transactions\//)
+              .map((t) => t.async("text"))
+          );
+          if (csv.length === 0) {
+            throw new Error("결제 내역을 찾지 못했습니다.");
+          }
+
+          const sum = {};
+          for (const c of csv) {
+            const parsed = Papa.parse(c, {
+              header: true,
+              skipEmptyLines: true,
+            });
+            googleTx = googleTx.concat(
+              parsed.data.filter(
+                (t) =>
+                  t.Description?.includes("(우마무스메 프리티 더비)") &&
+                  t.Status === "Complete"
+              )
+            );
+          }
+          if (googleTx.length === 0) {
+            throw new Error("우마무스메 결제 내역을 찾지 못했습니다.");
+          }
+
+          const googleTable = document.getElementById("googleTable");
+          const googleSum = document.getElementById("googleSum");
+          googleTable.innerHTML = "";
+          for (const t of googleTx) {
+            const tr = document.createElement("tr");
+            for (const col of [
+              "Time",
+              "Transaction ID",
+              "Description",
+              "Payment method",
+              "Amount",
+            ]) {
+              const td = document.createElement("td");
+              td.textContent = t[col];
+              tr.appendChild(td);
+            }
+            googleTable.appendChild(tr);
+
+            const currency = t.Amount.slice(0, 3);
+            sum[currency] ||= 0;
+            sum[currency] += parseInt(t.Amount.slice(4).replace(/,/g, ""));
+          }
+
+          for (const c in sum) {
+            const formatter = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            });
+          }
+          googleSum.textContent = Object.entries(sum)
+            .map(([currency, amount]) =>
+              new Intl.NumberFormat("ko-KR", {
+                style: "currency",
+                currency,
+              }).format(amount)
+            )
+            .join(", ");
+        } catch (e) {
+          alert(e.message || e);
+        }
+      });
+      googleDl.addEventListener("click", () => {
+        if (googleTx.length === 0) {
+          alert("우마무스메 결제 내역이 없습니다.");
+          return;
+        }
+        const csv = Papa.unparse({
+          fields: [
+            "Time",
+            "Transaction ID",
+            "Description",
+            "Payment method",
+            "Amount",
+          ],
+          data: googleTx,
+        });
+        const link = document.createElement("a");
+        link.download = "구글 결제내역.csv";
+        link.href = `data:text/csv;charset=utf-8,${encodeURI(`\ufeff${csv}`)}`;
+        document.body.appendChild(link);
+        link.click();
+      });
+    </script>
+  </body>
+</html>
