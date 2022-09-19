@@ -86,7 +86,7 @@ for d in res:
     subject = re.sub(r"[,\d]*\d\s*pt", "", subject, flags=re.IGNORECASE)
     subject = re.sub(r"pt\s*\d[,\d]*", "", subject, flags=re.IGNORECASE)
     subject = re.sub(r"포인트\s*\d[,\d]*", "", subject)
-    subject = re.sub(r"포인트\사용\s*\d[,\d]*", "", subject)
+    subject = re.sub(r"포인트\s사용\s*\d[,\d]*", "", subject)
 
     # 구글 7,010,700 정정-> 8,891,700
     subject = re.sub(r"[,\d]*\d\s*정정", "", subject)
