@@ -83,7 +83,7 @@ for d in res:
     subject = re.sub(r"[']", "", subject)
 
     # 구글 578,130 / 포인트 567 pt
-    subject = re.sub(r"\d+\s*pt", "", subject)
+    subject = re.sub(r"[,\d]*\d\s*pt", "", subject)
 
     # 구글/ 1,540,000~1,575,500 추정
     # 구글 91.96$
